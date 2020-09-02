@@ -1,5 +1,10 @@
 .task-list-item {
   padding: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+    background-color: lightgray;
+  }
   
   > * {
     display: inline-block;
