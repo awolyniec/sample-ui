@@ -30,7 +30,17 @@ export const completeTask = taskId => ({
   payload: taskId
 });
 
+export const setCompleteTaskConfirmationStatus = body => ({
+  type: types.SET_COMPLETE_TASK_CONFIRMATION_STATUS,
+  payload: body
+});
+
 export const deleteTask = taskId => ({
   type: types.DELETE_TASK,
   payload: taskId
+});
+
+export const setDeleteTaskConfirmationStatus = body => ({
+  type: types.SET_DELETE_TASK_CONFIRMATION_STATUS,
+  payload: body
 });

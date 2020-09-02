@@ -8,9 +8,12 @@ import TaskDetails from '../TaskDetails';
 import NewTaskDetails from '../NewTaskDetails';
 import {
   fetchTasks, setCreateTaskConfirmationStatus, createTask, completeTask,
-  deleteTask
+  deleteTask, setCompleteTaskConfirmationStatus, setDeleteTaskConfirmationStatus
 } from '../../redux/tasks/actions';
-import { selectTasks, selectTaskCreationConfirmationStatus } from '../../redux/tasks/selectors';
+import {
+  selectTasks, selectTaskCreationConfirmationStatus, selectTaskCompletionConfirmationStatus,
+  selectTaskDeletionConfirmationStatus
+} from '../../redux/tasks/selectors';
 
 import './styles.scss';
 
@@ -30,6 +33,8 @@ const TasksPage = () => {
 
   const tasks = useSelector(selectTasks);
   const createTaskConfirmationStatus = useSelector(selectTaskCreationConfirmationStatus);
+  const completeTaskConfirmationStatus = useSelector(selectTaskCompletionConfirmationStatus);
+  const deleteTaskConfirmationStatus = useSelector(selectTaskDeletionConfirmationStatus);
   const selectedTaskObject = tasks.find(task => task._id == selectedTask);
 
   useEffect(() => {
@@ -43,6 +48,20 @@ const TasksPage = () => {
       dispatch(fetchTasks());
     }
   }, [createTaskConfirmationStatus]);
+
+  useEffect(() => {
+    if (completeTaskConfirmationStatus) {
+      dispatch(setCompleteTaskConfirmationStatus(null));
+      dispatch(fetchTasks());
+    }
+  }, [completeTaskConfirmationStatus]);
+
+  useEffect(() => {
+    if (deleteTaskConfirmationStatus) {
+      dispatch(setDeleteTaskConfirmationStatus(null));
+      dispatch(fetchTasks());
+    }
+  }, [deleteTaskConfirmationStatus]);
 
   useEffect(() => {
     if (selectedTask && selectedTask !== NEW_TASK_KEYWORD && !selectedTaskObject) {

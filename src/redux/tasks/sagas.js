@@ -2,7 +2,10 @@ import { all, call, takeLatest, put } from 'redux-saga/effects';
 import axios from 'axios';
 
 import types from './types';
-import { setTasks, setError, setCreateTaskConfirmationStatus, fetchTasks } from './actions';
+import {
+  setTasks, setError, setCreateTaskConfirmationStatus, fetchTasks,
+  setCompleteTaskConfirmationStatus, setDeleteTaskConfirmationStatus
+} from './actions';
 
 export function* fetchTasksAsync() {
   try {
@@ -33,7 +36,7 @@ export function* onCreateTask() {
 export function* completeTaskAsync({ payload: taskId }) {
   try {
     yield axios.post(`http://localhost:3001/${taskId}/complete`);
-    yield put(fetchTasks());
+    yield put(setCompleteTaskConfirmationStatus(true));
   } catch (error) {
     yield put(setError(error));
   }
@@ -46,7 +49,7 @@ export function* onCompleteTask() {
 export function* deleteTaskAsync({ payload: taskId }) {
   try {
     yield axios.post(`http://localhost:3001/${taskId}/delete`);
-    yield put(fetchTasks());
+    yield put(setDeleteTaskConfirmationStatus(true));
   } catch (error) {
     yield put(setError(error));
   }
