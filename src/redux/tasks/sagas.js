@@ -1,5 +1,6 @@
 import { all, call, takeLatest, put } from 'redux-saga/effects';
 import axios from 'axios';
+import querystring from 'querystring';
 
 import types from './types';
 import {
@@ -7,9 +8,11 @@ import {
   setCompleteTaskConfirmationStatus, setDeleteTaskConfirmationStatus
 } from './actions';
 
-export function* fetchTasksAsync() {
+export function* fetchTasksAsync({ payload: query }) {
   try {
-    const { data: tasks } = yield axios.get('http://localhost:3001/search'); // TODO: create config file
+    const url = 'http://localhost:3001/search?' + querystring.stringify(query);
+    console.log(`URL: ${url}`);
+    const { data: tasks } = yield axios.get(url); // TODO: create config file
     yield put(setTasks(tasks));
   } catch (error) {
     yield put(setError(error));

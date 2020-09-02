@@ -25,41 +25,45 @@ const TasksPage = () => {
   const [description, setDescription] = useState(null);
   const [dueDate, setDueDate] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [filterUpcoming, setFilterUpcoming] = useState(true);
-  const [filterToday, setFilterToday] = useState(true);
-  const [filterTomorrow, setFilterTomorrow] = useState(true);
-  const [filterOverdue, setFilterOverdue] = useState(true);
-  const [filterComplete, setFilterComplete] = useState(true);
+  const [filterUpcoming, setFilterUpcoming] = useState(false);
+  const [filterToday, setFilterToday] = useState(false);
+  const [filterTomorrow, setFilterTomorrow] = useState(false);
+  const [filterOverdue, setFilterOverdue] = useState(false);
+  const [filterComplete, setFilterComplete] = useState(false);
 
   const tasks = useSelector(selectTasks);
   const createTaskConfirmationStatus = useSelector(selectTaskCreationConfirmationStatus);
   const completeTaskConfirmationStatus = useSelector(selectTaskCompletionConfirmationStatus);
   const deleteTaskConfirmationStatus = useSelector(selectTaskDeletionConfirmationStatus);
+
   const selectedTaskObject = tasks.find(task => task._id == selectedTask);
+  const beginningOfToday = moment().startOf('day');
+  const beginningOfTomorrow = moment(beginningOfToday).add(1, 'days');
+  const beginningOfTwoDaysFromNow = moment(beginningOfTomorrow).add(1, 'days');
 
   useEffect(() => {
-    dispatch(fetchTasks());
+    getTasks();
   }, [dispatch]);
 
   useEffect(() => {
     if (createTaskConfirmationStatus) {
       setSelectedTask(null);
       dispatch(setCreateTaskConfirmationStatus(null));
-      dispatch(fetchTasks());
+      getTasks();
     }
   }, [createTaskConfirmationStatus]);
 
   useEffect(() => {
     if (completeTaskConfirmationStatus) {
       dispatch(setCompleteTaskConfirmationStatus(null));
-      dispatch(fetchTasks());
+      getTasks();
     }
   }, [completeTaskConfirmationStatus]);
 
   useEffect(() => {
     if (deleteTaskConfirmationStatus) {
       dispatch(setDeleteTaskConfirmationStatus(null));
-      dispatch(fetchTasks());
+      getTasks();
     }
   }, [deleteTaskConfirmationStatus]);
 
@@ -69,9 +73,38 @@ const TasksPage = () => {
     }
   }, [JSON.stringify(tasks)]);
 
+  useEffect(() => {
+    setSelectedTask(null);
+    getTasks();
+  }, [filterToday, filterTomorrow, filterOverdue, filterComplete]);
+
   // ====================
   // HELPER FUNCTIONS
   // ====================
+
+  const getTasks = () => {
+    const query = {};
+    if (filterComplete) {
+      query.isComplete = true;
+    }
+    let dueDateStart = null;
+    let dueDateEnd = null;
+    // if overdue, set query.dueDateEnd to now
+    if (filterOverdue) {
+      query.dueDateEnd = new Date().toISOString();
+    }
+    if (filterToday) {
+      query.dueDateStart = beginningOfToday.toISOString();
+      query.dueDateEnd = beginningOfTomorrow.toISOString();
+    }
+    if (filterTomorrow) {
+      if (!query.dueDateStart) {
+        query.dueDateStart = beginningOfTomorrow.toISOString();
+      }
+      query.dueDateEnd = beginningOfTwoDaysFromNow.toISOString();
+    }
+    dispatch(fetchTasks(query));
+  };
 
   const newTaskInProgress = () => selectedTask === NEW_TASK_KEYWORD;
 
@@ -109,6 +142,37 @@ const TasksPage = () => {
     setDueDate(event.target.value);
   };
 
+  const toggleUpcomingFilter = () => {
+    if (filterUpcoming) {
+      setFilterToday(false);
+      setFilterTomorrow(false);
+    } else {
+      setFilterOverdue(false);
+    }
+    setFilterUpcoming(!filterUpcoming);
+  };
+
+  const toggleTodayFilter = () => {
+    setFilterToday(!filterToday);
+  };
+
+  const toggleTomorrowFilter = () => {
+    setFilterTomorrow(!filterTomorrow);
+  };
+
+  const toggleOverdueFilter = () => {
+    if (!filterOverdue) {
+      setFilterUpcoming(false);
+      setFilterToday(false); // TODO: refactor
+      setFilterTomorrow(false);
+    }
+    setFilterOverdue(!filterOverdue);
+  };
+
+  const toggleCompleteFilter = () => {
+    setFilterComplete(!filterComplete);
+  };
+
   const validateNewTask = () => {
     return !!name;
   };
@@ -128,9 +192,6 @@ const TasksPage = () => {
   const taskList = tasks.map(task => {
     const { _id, name, dueDate, isComplete } = task;
     const isOverdue = moment(dueDate).isBefore(new Date());
-    const beginningOfToday = moment().startOf('day');
-    const beginningOfTomorrow = moment(beginningOfToday).add(1, 'days');
-    const beginningOfTwoDaysFromNow = moment(beginningOfTomorrow).add(1, 'days');
     const isDueToday = !isOverdue && moment(dueDate).isSameOrAfter(beginningOfToday) && moment(dueDate).isBefore(beginningOfTomorrow);
     const isDueTomorrow = moment(dueDate).isSameOrAfter(beginningOfTomorrow) && moment(dueDate).isBefore(beginningOfTwoDaysFromNow);
     return {
@@ -178,6 +239,11 @@ const TasksPage = () => {
           tomorrow={filterTomorrow}
           overdue={filterOverdue}
           complete={filterComplete}
+          onToggleUpcoming={toggleUpcomingFilter}
+          onToggleToday={toggleTodayFilter}
+          onToggleTomorrow={toggleTomorrowFilter}
+          onToggleOverdue={toggleOverdueFilter}
+          onToggleComplete={toggleCompleteFilter}
         />
       </div>
       <div className="task-list-container">
