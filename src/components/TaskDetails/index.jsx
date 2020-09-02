@@ -5,7 +5,7 @@ import './styles.scss';
 
 const TaskDetails = (props) => {
   const {
-    name, description, dueDate, isComplete, onComplete
+    name, description, dueDate, isComplete, onComplete, onDelete
   } = props;
 
   return (
@@ -29,7 +29,16 @@ const TaskDetails = (props) => {
         >
           Mark as done
         </button>
-        <button className="delete-button">Delete</button>
+        <button
+          className="delete-button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onDelete();
+          }}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

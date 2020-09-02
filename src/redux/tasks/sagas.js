@@ -43,10 +43,24 @@ export function* onCompleteTask() {
   yield takeLatest(types.COMPLETE_TASK, completeTaskAsync);
 }
 
+export function* deleteTaskAsync({ payload: taskId }) {
+  try {
+    yield axios.post(`http://localhost:3001/${taskId}/delete`);
+    yield put(fetchTasks());
+  } catch (error) {
+    yield put(setError(error));
+  }
+}
+
+export function* onDeleteTask() {
+  yield takeLatest(types.DELETE_TASK, deleteTaskAsync);
+}
+
 export function* taskSagas() {
   yield all([
     call(onFetchTasks),
     call(onCreateTask),
-    call(onCompleteTask)
+    call(onCompleteTask),
+    call(onDeleteTask)
   ]);
 }

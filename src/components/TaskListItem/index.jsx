@@ -6,7 +6,7 @@ import './styles.scss';
 const TaskListItem = (props) => {
   const {
     isComplete, isDueToday, isDueTomorrow, isOverdue,
-    text, isSelected, onSelect, onComplete
+    text, isSelected, onSelect, onComplete, onDelete
   } = props;
   return (
     <div
@@ -39,7 +39,16 @@ const TaskListItem = (props) => {
         {isOverdue && (
           <span className="overdue-text">Overdue</span>
         )}
-        <button className="button">Delete</button>
+        <button
+          className="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            onDelete();
+          }}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

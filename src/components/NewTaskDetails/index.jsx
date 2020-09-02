@@ -5,7 +5,7 @@ import './styles.scss';
 const NewTaskDetails = (props) => {
   const {
     name, description, dueDate, onChangeName, onChangeDescription,
-    onChangeDueDate, onCreate
+    onChangeDueDate, onCreate, onDelete
   } = props;
 
   return (
@@ -46,7 +46,16 @@ const NewTaskDetails = (props) => {
           >
             Create
           </button>
-          <button className="delete-button">Delete</button>
+          <button
+            className="delete-button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete();
+            }}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>

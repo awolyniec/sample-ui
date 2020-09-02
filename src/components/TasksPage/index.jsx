@@ -6,7 +6,10 @@ import Filters from '../Filters';
 import TaskList from '../TaskList';
 import TaskDetails from '../TaskDetails';
 import NewTaskDetails from '../NewTaskDetails';
-import { fetchTasks, setCreateTaskConfirmationStatus, createTask, completeTask } from '../../redux/tasks/actions';
+import {
+  fetchTasks, setCreateTaskConfirmationStatus, createTask, completeTask,
+  deleteTask
+} from '../../redux/tasks/actions';
 import { selectTasks, selectTaskCreationConfirmationStatus } from '../../redux/tasks/selectors';
 
 import './styles.scss';
@@ -27,6 +30,7 @@ const TasksPage = () => {
 
   const tasks = useSelector(selectTasks);
   const createTaskConfirmationStatus = useSelector(selectTaskCreationConfirmationStatus);
+  const selectedTaskObject = tasks.find(task => task._id == selectedTask);
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -40,7 +44,11 @@ const TasksPage = () => {
     }
   }, [createTaskConfirmationStatus]);
 
-  // TODO: when deleting selected task, make sure it gets unselected
+  useEffect(() => {
+    if (selectedTask && selectedTask !== NEW_TASK_KEYWORD && !selectedTaskObject) {
+      setSelectedTask(null);
+    }
+  }, [JSON.stringify(tasks)]);
 
   // ====================
   // HELPER FUNCTIONS
@@ -106,7 +114,6 @@ const TasksPage = () => {
     const beginningOfTwoDaysFromNow = moment(beginningOfTomorrow).add(1, 'days');
     const isDueToday = !isOverdue && moment(dueDate).isSameOrAfter(beginningOfToday) && moment(dueDate).isBefore(beginningOfTomorrow);
     const isDueTomorrow = moment(dueDate).isSameOrAfter(beginningOfTomorrow) && moment(dueDate).isBefore(beginningOfTwoDaysFromNow);
-    // TODO: add other action handlers
     return {
       isComplete,
       isDueToday,
@@ -115,7 +122,8 @@ const TasksPage = () => {
       text: name,
       isSelected: _id === selectedTask,
       onSelect: selectTask(_id),
-      onComplete: () => dispatch(completeTask(_id))
+      onComplete: () => dispatch(completeTask(_id)),
+      onDelete: () => dispatch(deleteTask(_id))
     };
   });
 
@@ -123,20 +131,22 @@ const TasksPage = () => {
     taskList.push({
       text: name,
       isSelected: true,
-      onSelect: () => {}
+      onSelect: () => {},
+      onComplete: () => {},
+      onDelete: () => setSelectedTask(null)
     });
   }
 
   let taskDetails = {};
-  if (selectedTask && selectedTask !== NEW_TASK_KEYWORD) {
-    const selectedTaskObject = tasks.find(task => task._id == selectedTask);
+  if (selectedTaskObject) {
     const { _id, name, description, dueDate, isComplete } = selectedTaskObject;
     taskDetails = {
       name,
       description,
       dueDate,
       isComplete,
-      onComplete: () => dispatch(completeTask(_id))
+      onComplete: () => dispatch(completeTask(_id)),
+      onDelete: () => dispatch(deleteTask(_id))
     };
   }
 
@@ -165,8 +175,9 @@ const TasksPage = () => {
             onChangeDescription={changeDescription}
             onChangeDueDate={changeDueDate}
             onCreate={createNewTask}
+            onDelete={() => setSelectedTask(null)}
           />
-        ) : selectedTask ? (
+        ) : selectedTaskObject ? (
           <TaskDetails
             {...taskDetails}
           />
