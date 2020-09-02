@@ -6,3 +6,8 @@ export const selectTasks = createSelector(
   [selectTasksState],
   tasks => tasks.tasks
 );
+
+export const selectTaskCreationConfirmationStatus = createSelector(
+  [selectTasksState],
+  tasks => tasks.createdTaskConfirmation
+);

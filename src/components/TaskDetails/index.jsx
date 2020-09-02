@@ -13,8 +13,7 @@ const TaskDetails = (props) => {
       <p>{description}</p>
       <div className="due-date">
         <b>Due:</b>
-        <span>{moment(dueDate).format('MM/DD/YYYY')}</span>
-        {/* <input type="datetime-local" /> */}
+        <span>{dueDate ? moment(dueDate).format('MM/DD/YYYY hh:mm A') : 'N/A'}</span>
       </div>
       <div>
         <button className="finish-button">Mark as done</button>

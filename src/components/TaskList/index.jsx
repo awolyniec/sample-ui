@@ -10,7 +10,17 @@ const TaskList = (props) => {
   return (
     <div className="task-list">
       <div className="task-list-header">
-        <button type="button" className="add-new-button">+</button>
+        <button
+          type="button"
+          className="add-new-button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onClickNew();
+          }}
+        >
+          +
+        </button>
         <h1>Tasks</h1>
       </div>
       {tasks.map(task => (
