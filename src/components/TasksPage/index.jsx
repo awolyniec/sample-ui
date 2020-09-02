@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import Filters from '../Filters';
 import TaskList from '../TaskList';
 import TaskDetails from '../TaskDetails';
 import NewTaskDetails from '../NewTaskDetails';
@@ -11,6 +12,12 @@ const TasksPage = () => {
   const [description, setDescription] = useState('This is a really cool task. I mean, like, really cool. Wow.');
   const [dueDate, setDueDate] = useState(new Date('2020-01-01T00:00:00.000Z'));
   const [isNewTask, setIsNewTask] = useState(true);
+
+  const [filterUpcoming, setFilterUpcoming] = useState(true);
+  const [filterToday, setFilterToday] = useState(true);
+  const [filterTomorrow, setFilterTomorrow] = useState(true);
+  const [filterOverdue, setFilterOverdue] = useState(true);
+  const [filterComplete, setFilterComplete] = useState(true);
 
   const taskDetails = [
     {
@@ -35,7 +42,13 @@ const TasksPage = () => {
   return (
     <div className="tasks-page">
       <div className="filters-container">
-
+        <Filters
+          upcoming={filterUpcoming}
+          today={filterToday}
+          tomorrow={filterTomorrow}
+          overdue={filterOverdue}
+          complete={filterComplete}
+        />
       </div>
       <div className="task-list-container">
         <TaskList tasks={taskDetails} />
