@@ -1,0 +1,16 @@
+.tasks-page {
+  display: flex;
+  justify-content: center;
+
+  > *:not(:last-child) {
+    margin-right: 1rem;
+  }
+
+  .task-list-container {
+    width: 500px;
+  }
+
+  .task-details-container {
+    width: 400px;
+  }
+}

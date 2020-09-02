@@ -1,0 +1,30 @@
+.task-list-item {
+  padding: 0.5rem;
+  
+  > * {
+    display: inline-block;
+  }
+
+  &.selected {
+    border: 1px solid black;
+  }
+
+  &.complete {
+    color: gray;
+    .task-text {
+      text-decoration: line-through;
+    }
+  }
+
+  .right-content {
+    float: right;
+  }
+
+  .soon-due-text {
+    color: green;
+  }
+
+  .overdue-text {
+    color: red;
+  }
+}

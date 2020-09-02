@@ -1,0 +1,17 @@
+.task-details {
+  .due-date {
+    > *:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+
+    margin-bottom: 1rem;
+  }
+
+  .finish-button {
+    float: left;
+  }
+
+  .delete-button {
+    float: right;
+  }
+}
