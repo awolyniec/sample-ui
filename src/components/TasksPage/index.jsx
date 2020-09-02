@@ -6,7 +6,7 @@ import Filters from '../Filters';
 import TaskList from '../TaskList';
 import TaskDetails from '../TaskDetails';
 import NewTaskDetails from '../NewTaskDetails';
-import { fetchTasks, setCreateTaskConfirmationStatus, createTask } from '../../redux/tasks/actions';
+import { fetchTasks, setCreateTaskConfirmationStatus, createTask, completeTask } from '../../redux/tasks/actions';
 import { selectTasks, selectTaskCreationConfirmationStatus } from '../../redux/tasks/selectors';
 
 import './styles.scss';
@@ -114,7 +114,8 @@ const TasksPage = () => {
       isOverdue,
       text: name,
       isSelected: _id === selectedTask,
-      onSelect: selectTask(_id)
+      onSelect: selectTask(_id),
+      onComplete: () => dispatch(completeTask(_id))
     };
   });
 
@@ -129,11 +130,13 @@ const TasksPage = () => {
   let taskDetails = {};
   if (selectedTask && selectedTask !== NEW_TASK_KEYWORD) {
     const selectedTaskObject = tasks.find(task => task._id == selectedTask);
-    const { name, description, dueDate } = selectedTaskObject;
+    const { _id, name, description, dueDate, isComplete } = selectedTaskObject;
     taskDetails = {
       name,
       description,
-      dueDate
+      dueDate,
+      isComplete,
+      onComplete: () => dispatch(completeTask(_id))
     };
   }
 

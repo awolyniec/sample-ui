@@ -6,7 +6,7 @@ import './styles.scss';
 const TaskListItem = (props) => {
   const {
     isComplete, isDueToday, isDueTomorrow, isOverdue,
-    text, isSelected, onSelect
+    text, isSelected, onSelect, onComplete
   } = props;
   return (
     <div
@@ -17,7 +17,15 @@ const TaskListItem = (props) => {
         onSelect();
       }}
     >
-      <button type="button" disabled={isComplete}>
+      <button
+        type="button"
+        disabled={isComplete}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onComplete();
+        }}
+      >
         Done
       </button>
       <span className="task-text">{text}</span>
